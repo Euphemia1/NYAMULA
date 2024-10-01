@@ -1,0 +1,98 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Select User Type - Nyamula Logistics</title>
+  <style>
+    
+    body {
+      font-family: Arial, sans-serif; 
+      background-color: #f4f4f4; 
+      margin: 0;
+    }
+    /* Navigation styles */
+    nav {
+      background-color: #f4f4f4; /* Logo background color */
+      padding: 10px 20px;
+    }
+    .logo {
+      display: inline-block;
+    }
+    .logo-img {
+      height: 50px; /* Adjust as needed */
+    }
+    /* Main content styles */
+    .container {
+      text-align: center; 
+      background-color: white; 
+      padding: 40px; 
+      border-radius: 8px; 
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
+      width: 100%; 
+      max-width: 500px; 
+      margin: 20px auto; 
+      font-size: 16px;
+      line-height: 24px;
+
+    }
+    h1 {
+      color: #218838; 
+      margin-bottom: 20px; 
+    }
+    p {
+      color: #333; 
+      margin-bottom: 20px; 
+    }
+    .options {
+      display: flex; 
+      justify-content: center; 
+      gap: 20px; 
+      margin-top: 20px; 
+    }
+    /* Button styles */
+    button {
+      padding: 15px 30px; 
+      border-radius: 5px; 
+      border: none; 
+      font-size: 16px; 
+      cursor: pointer; 
+      color: white; 
+    }
+    .cargo-owner {
+      background-color: #218838; 
+    }
+    .transporter {
+      background-color: #218838; 
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="logo">
+      <img class="logo-img" src="/assets/Nyamula_Logo_White__1_-output-removebg-preview.png" alt="Nyamula logo">
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1>Sign Up</h1>
+    <p>Please choose the type of account you want to create:</p>
+
+    <div class="options">
+      <button class="cargo-owner" onclick="redirectTo('cargo-owner')">Cargo Owner</button>
+      <button class="transporter" onclick="redirectTo('transporter')">Transporter</button>
+    </div>
+  </div>
+  <script>
+    // JavaScript to handle redirection
+    function redirectTo(userType) {
+      if (userType === 'cargo-owner') {
+        window.location.href = 'cargo_owner_signup.html';
+      } else if (userType === 'transporter') {
+        window.location.href = 'transporter_signup.html';
+      }
+    }
+  </script>
+</body>
+</html>

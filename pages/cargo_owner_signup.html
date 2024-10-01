@@ -1,0 +1,121 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cargo Owner Sign-Up - Nyamula Logistics</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif; 
+      background-color: #f4f4f4; 
+      margin: 0;
+    }
+
+    /* Navigation styles */
+    nav {
+      background-color: #f4f4f4; 
+      padding: 10px 20px;
+    }
+    .logo {
+      display: inline-block;
+    }
+    .logo-img {
+      height: 50px; /* Adjust as needed */
+    }
+    /* Main content styles */
+    .container {
+      text-align: center; 
+      background-color: white; 
+      padding: 40px; 
+      border-radius: 8px; 
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
+      width: 100%; 
+      max-width: 500px; 
+      margin: 20px auto; 
+      font-size:16px;
+      line-height: 24px;
+
+    }
+    h1 {
+      color: #218838; 
+      margin-bottom: 20px; 
+    }
+    p {
+      color: #218838; 
+      margin-bottom: 20px; 
+    }
+    /* Input styles */
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="tel"] {
+      width: 100%; 
+      padding: 10px; 
+      border: 1px solid #ccc; 
+      border-radius: 5px; 
+      box-sizing: border-box; 
+      margin-bottom: 20px; 
+    }
+    /* Submit button */
+    button[type="submit"] {
+      background-color: #218838; 
+      color: white; 
+      padding: 10px 20px; 
+      font-size: 16px; 
+      border: none; 
+      border-radius: 5px; 
+      cursor: pointer; 
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="logo">
+      <img class="logo-img" src="/assets/Nyamula_Logo_White__1_-output-removebg-preview.png" alt="Nyamula logo">
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1>Cargo Owner Sign-Up</h1>
+    <form action="/cargo-owner-register" method="POST">
+      <div>
+        <label for="name" style="display: block; font-size: 14px; color: #333; margin-bottom: 5px;">Full Name</label>
+        <input type="text" id="name" name="name" required>
+      </div>
+      <div>
+        <label for="email" style="display: block; font-size: 14px; color: #333; margin-bottom: 5px;">Email</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+      <div>
+        <label for="password" style="display: block; font-size: 14px; color: #333; margin-bottom: 5px;">Password</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <div>
+        <label for="company" style="display: block; font-size: 14px; color: #333; margin-bottom: 5px;">Company Name</label>
+        <input type="text" id="company" name="company" required>
+      </div>
+      <div>
+        <label for="phone" style="display: block; font-size: 14px; color: #333; margin-bottom: 5px;">Phone Number</label>
+        <input type="tel" id="phone" name="phone" required>
+      </div>
+      <div>
+        <button type="submit">Sign Up as Cargo Owner</button>
+      </div>
+    </form>
+  </div>
+  <script>
+    document.querySelector('form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      // Here you would typically send the form data to the server
+      
+      // Simulate form submission (remove this in production)
+      setTimeout(() => {
+        // Redirect to the login page after submission
+        window.location.href = 'user_login.html';
+      }, 1000);
+    });
+  </script>
+</body>
+</html>
+

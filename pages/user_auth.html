@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nyamula Logistics - User Authentication</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background-color: #ffffff; /* White background */
+            color: #333; /* Dark text for contrast */
+            margin: 0; 
+            padding: 20px; 
+        }
+        h1 {
+            color: #4CAF50; /* Green color */
+            text-align: center;
+        }
+        .form-container { 
+            display: none; 
+            margin: 20px auto; 
+            padding: 20px; 
+            border-radius: 5px; 
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); 
+            max-width: 400px; 
+            background-color: #f9f9f9; /* Light gray background */
+        }
+        .form-container.active { display: block; }
+        input { 
+            width: 100%; 
+            padding: 10px; 
+            margin: 10px 0; 
+            border: 1px solid #4CAF50; /* Green border */
+            border-radius: 5px; 
+        }
+        button { 
+            background-color: #4CAF50; /* Green button */
+            color: white; 
+            border: none; 
+            padding: 10px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            width: 100%;
+            font-size: 16px; 
+        }
+        button:hover { 
+            background-color: #45a049; /* Darker green on hover */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Nyamula Logistics</h1>
+
+    <!-- Cargo Owner Form -->
+    <div id="cargoOwnerForm" class="form-container active">
+        <h2>Cargo Owner Signup</h2>
+        <input type="text" id="cargoOwnerName" placeholder="Name" required>
+        <input type="email" id="cargoOwnerEmail" placeholder="Email" required>
+        <input type="password" id="cargoOwnerPassword" placeholder="Password" required>
+        <button onclick="submitCargoOwner()">Submit</button>
+    </div>
+
+    <!-- Transporter Form -->
+    <div id="transporterForm" class="form-container">
+        <h2>Transporter Signup</h2>
+        <input type="text" id="transporterName" placeholder="Name" required>
+        <input type="email" id="transporterEmail" placeholder="Email" required>
+        <input type="password" id="transporterPassword" placeholder="Password" required>
+        <button onclick="submitTransporter()">Submit</button>
+    </div>
+
+    <!-- Login Form -->
+    <div id="loginForm" class="form-container login-container">
+        <h2>Login</h2>
+        <input type="text" id="loginName" placeholder="Name or Email" required>
+        <input type="password" id="loginPassword" placeholder="Password" required>
+        <button onclick="login()">Login</button>
+    </div>
+
+    <script>
+        // Simulate storing users (In a real application, this should be a database)
+        const users = [];
+
+        function submitCargoOwner() {
+            const name = document.getElementById('cargoOwnerName').value;
+            const email = document.getElementById('cargoOwnerEmail').value;
+            const password = document.getElementById('cargoOwnerPassword').value;
+
+            // Store Cargo Owner data (simulated)
+            users.push({ role: 'Cargo Owner', name, email, password });
+
+            alert('Cargo Owner signed up successfully!');
+            showLoginForm();
+        }
+
+        function submitTransporter() {
+            const name = document.getElementById('transporterName').value;
+            const email = document.getElementById('transporterEmail').value;
+            const password = document.getElementById('transporterPassword').value;
+
+            // Store Transporter data (simulated)
+            users.push({ role: 'Transporter', name, email, password });
+
+            alert('Transporter signed up successfully!');
+            showLoginForm();
+        }
+
+        function showLoginForm() {
+            // Clear previous forms and show the login form
+            document.getElementById('cargoOwnerForm').classList.remove('active');
+            document.getElementById('transporterForm').classList.remove('active');
+            document.getElementById('loginForm').classList.add('active');
+        }
+
+        function login() {
+            const nameOrEmail = document.getElementById('loginName').value;
+            co

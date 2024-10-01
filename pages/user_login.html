@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cargo Owner Sign-Up - Nyamula Logistics</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif; 
+      background-color: #f4f4f4; 
+      margin: 0;
+    }
+    /* Navigation styles */
+    nav {
+      background-color: #f4f4f4; 
+      padding: 10px 20px;
+    }
+    
+    .logo {
+      display: inline-block;
+    }
+    .logo-img {
+      height: 50px; /* Adjust as needed */
+    }
+    /* Main content styles */
+    .container {
+      text-align: center; 
+      background-color: white; 
+      padding: 40px; 
+      border-radius: 8px; 
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
+      width: 100%; 
+      max-width: 500px; 
+      margin: 20px auto; 
+      font-size:16px;
+      line-height: 24px;
+
+    }
+    h1 {
+      color: #218838; 
+      margin-bottom: 20px; 
+    }
+    p {
+      color: #218838; 
+      margin-bottom: 20px; 
+    }
+    /* Input styles */
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="tel"] {
+      width: 100%; 
+      padding: 10px; 
+      border: 1px solid #ccc; 
+      border-radius: 5px; 
+      box-sizing: border-box; 
+      margin-bottom: 20px; 
+    }
+    /* Submit button */
+    button[type="submit"] {
+      background-color: #218838; 
+      color: white; 
+      padding: 10px 20px; 
+      font-size: 16px; 
+      border: none; 
+      border-radius: 5px; 
+      cursor: pointer; 
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="logo">
+      <img class="logo-img" src="/assets/Nyamula_Logo_White__1_-output-removebg-preview.png" alt="Nyamula logo">
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1>Login</h1>
+    <form id="loginForm" action="/login" method="POST">
+      <div>
+        <label for="email" style="display: block; font-size: 14px; color: #333; margin-bottom: 5px;">Email</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+      <div>
+        <label for="password" style="display: block; font-size: 14px; color: #333; margin-bottom: 5px;">Password</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <div>
+        <label style="display: block; font-size: 14px; color: #333; margin-bottom: 5px;">Select login option</label>
+        <div>
+          <input type="radio" id="cargo_owner" name="login_option" value="cargo_owner" required>
+          <label for="cargo_owner" style="font-size: 14px; color: #333; margin-right: 10px;">Cargo Owner</label>
+          <input type="radio" id="transporter" name="login_option" value="transporter" required>
+          <label for="transporter" style="font-size: 14px; color: #333;">Transporter</label>
+        </div>
+      </div>
+      <div>
+        <button type="submit">Login</button>
+      </div>
+    </form>
+    <p>New transporter? <a href="/transporter_signup.html">Sign up here</a></p>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const loginOption = document.querySelector('input[name="login_option"]:checked').value;
+      
+      // Simulating authentication (replace with actual authentication logic)
+      const isAuthenticated = simulateAuthentication(email, password, loginOption);
+      
+      if (isAuthenticated) {
+        // Redirect based on the selected option
+        if (loginOption === 'cargo_owner') {
+          window.location.href = '/cargo_dashboard.html';
+        } else if (loginOption === 'transporter') {
+          window.location.href = '/transporter_dashboard.html';
+        }
+      } else {
+        alert('Invalid credentials. Please try again.');
+      }
+    });
+
+    function simulateAuthentication(email, password, loginOption) {
+      // This is a placeholder function. Replace with actual authentication logic.
+      return true; // Always return true for this example
+    }
+  </script>
+
+</body>
+</html>
+
