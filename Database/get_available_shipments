@@ -1,0 +1,30 @@
+<?php
+require_once 'db_connection.php';
+
+function get_available_shipments($transporter_id) {
+    global $conn;
+    
+    $transporter_id = mysqli_real_escape_string($conn, $transporter_id);
+    
+    $query = "SELECT s.* FROM shipments s
+              LEFT JOIN transporter_routes tr ON s.route = tr.route
+              WHERE s.status = 'pending'
+              AND tr.transporter_id = '$transporter_id'
+              ORDER BY s.created_at DESC";
+    
+    $result = mysqli_query($conn, $query);
+    
+    $available_shipments = array();
+    
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $available_shipments[] = $row;
+        }
+    }
+    
+    return $available_shipments;
+}
+
+// Usage example:
+// $transporter_id = '123';
+// $available_shipments = get_available_shipments($transporter_id);
