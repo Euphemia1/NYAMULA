@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nyamula Logistics Admin Dashboard</title>
+    <style>
+        /* Global styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            width: 250px;
+            background-color: #218838;
+            padding-top: 20px;
+            color: #fff;
+            position: fixed;
+            height: 100%;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .sidebar ul li {
+            padding: 15px 20px;
+            cursor: pointer;
+        }
+
+        .sidebar ul li:hover {
+            background-color:#218838;
+        }
+
+        .sidebar ul li.active {
+            background-color: #218838;
+        }
+
+        /* Main content styles */
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            width: calc(100% - 250px);
+            background-color: #fff;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            background-color: #fff;
+            padding: 10px 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .header h1 {
+            color: #213383;
+        }
+
+        .header button {
+            background-color: #218838;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .dashboard-cards {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .card {
+            background-color: #fff;
+            padding: 20px;
+            width: 48%;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .card h3 {
+            color: #218838;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 20px;
+            color: #555;
+        }
+
+        /* User management table */
+        .user-table {
+            margin-top: 30px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .user-table th, .user-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .user-table th {
+            background-color: #218838;
+            color: white;
+        }
+
+        /* Responsiveness */
+        @media screen and (max-width: 768px) {
+            .dashboard-cards {
+                flex-direction: column;
+            }
+
+            .card {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+        }
+
+        /* Additional styles for new sections */
+        .section {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .section h2 {
+            color: #218838;
+            margin-bottom: 15px;
+        }
+
+        .action-buttons {
+            margin-top: 10px;
+        }
+
+        .action-buttons button {
+            background-color: #218838;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            margin-right: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .action-buttons button:hover {
+            background-color: #1e7e34;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 8px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>Nyamula Logistics</h2>
+            <ul>
+                <li class="active" onclick="showSection('dashboard')">Dashboard</li>
+                <li onclick="showSection('transporters')">Manage Transporters</li>
+                <li onclick="showSection('cargoOwners')">Manage Cargo Owners</li>
+                <li onclick="showSection('loads')">Manage Loads</li>
+                <li onclick="showSection('capacity')">Manage Capacity</li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>Admin Dashboard</h1>
+                <button onclick="logout()">Logout</button>
+            </div>
+
+            <div id="dashboard" class="section">
+                <!-- Dashboard Overview -->
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <h3>Total Transporters</h3>
+                        <p id="transporterCount"></p>
+                    </div>
+                    <div class="card">
+                        <h3>Total Cargo Owners</h3>
+                        <p id="cargoOwnerCount"></p>
+                    </div>
+                    <div class="card">
+                        <h3>Active Loads</h3>
+                        <p id="activeLoadsCount"></p>
+                    </div>
+                    <div class="card">
+                        <h3>Available Capacity</h3>
+                        <p id="availableCapacityCount"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manage Transporters -->
+            <div id="transporters" class="section" style="display: none;">
+                <h2>Manage Transporters</h2>
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>John Doe</td>
+                            <td>john@nyamula.com</td>
+                            <td><button>Edit</button> <button>Delete</button></td>
+                        </tr>
+                        <!-- More rows can be added -->
+                    </tbody>
+                </table>
+                <div class="action-buttons">
+                    <button onclick="openModal('addTransporterModal')">Add Transporter</button>
+                </div>
+            </div>
+
+            <!-- Manage Cargo Owners -->
+            <div id="cargoOwners" class="section" style="display: none;">
+                <h2>Manage Cargo Owners</h2>
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Jane Smith</td>
+                            <td>jane@nyamula.com</td>
+                            <td><button>Edit</button> <button>Delete</button></td>
+                        </tr>
+                        <!-- More rows can be added -->
+                    </tbody>
+                </table>
+                <div class="action-buttons">
+                    <button onclick="openModal('addCargoOwnerModal')">Add Cargo Owner</button>
+                </div>
+            </div>
+
+            <!-- Manage Loads -->
+            <div id="loads" class="section" style="display: none;">
+                <h2>Manage Loads</h2>
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Cargo Owner</th>
+                            <th>Origin</th>
+                            <th>Destination</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="loadsTableBody">
+                        <!-- Loads will be dynamically added here -->
+                    </tbody>
+                </table>
+                <div class="action-buttons">
+                    <button onclick="openModal('addLoadModal')">Add Load</button>
+                </div>
+            </div>
+
+            <!-- Manage Capacity -->
+            <div id="capacity" class="section" style="display: none;">
+                <h2>Manage Available Capacity</h2>
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Transporter</th>
+                            <th>Vehicle Type</th>
+                            <th>Capacity</th>
+                            <th>Available From</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="capacityTableBody">
+                        <!-- Capacity entries will be dynamically added here -->
+                    </tbody>
+                </table>
+                <div class="action-buttons">
+                    <button onclick="openModal('addCapacityModal')">Add Capacity</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="addTransporterModal" class="modal">
+        <!-- Add transporter form -->
+    </div>
+
+    <div id="addCargoOwnerModal" class="modal">
+        <!-- Add cargo owner form -->
+    </div>
+
+    <div id="addLoadModal" class="modal">
+        <!-- Add load form -->
+    </div>
+
+    <div id="addCapacityModal" class="modal">
+        <!-- Add capacity form -->
+    </div>
+
+    <script>
+        // JavaScript to manage page navigation and interaction
+        function showSection(sectionId) {
+            const sections = ['dashboard', 'transporters', 'cargoOwners', 'loads', 'capacity'];
+            sections.forEach(section => {
+                document.getElementById(section).style.display = section === sectionId ? 'block' : 'none';
+            });
+            setActiveMenu(sections.indexOf(sectionId));
+        }
+
+        function setActiveMenu(index) {
+            const menuItems = document.querySelectorAll('.sidebar ul li');
+            menuItems.forEach((item, i) => {
+                item.classList.toggle('active', i === index);
+            });
+        }
+
+        function logout() {
+            alert("You have logged out.");
+            // Redirect to login page or perform actual logout logic
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Sample data for loads
+        const loads = [
+            { id: 1, cargoOwner: 'ABC Company', origin: 'Nairobi', destination: 'Mombasa', status: 'In Transit' },
+            { id: 2, cargoOwner: 'XYZ Ltd', origin: 'Kisumu', destination: 'Nakuru', status: 'Pending' },
+        ];
+
+        // Sample data for capacity
+        const capacities = [
+            { id: 1, transporter: 'Fast Movers', vehicleType: 'Truck', capacity: '20 tons', availableFrom: '2023-05-01' },
+            { id: 2, transporter: 'Swift Logistics', vehicleType: 'Van', capacity: '5 tons', availableFrom: '2023-05-03' },
+        ];
+
+        // Function to populate tables
+        function populateTables() {
+            const loadsTableBody = document.getElementById('loadsTableBody');
+            loadsTableBody.innerHTML = loads.map(load => `
+                <tr>
+                    <td>${load.id}</td>
+                    <td>${load.cargoOwner}</td>
+                    <td>${load.origin}</td>
+                    <td>${load.destination}</td>
+                    <td>${load.status}</td>
+                    <td><button onclick="editLoad(${load.id})">Edit</button> <button onclick="deleteLoad(${load.id})">Delete</button></td>
+                </tr>
+            `).join('');
+
+            const capacityTableBody = document.getElementById('capacityTableBody');
+            capacityTableBody.innerHTML = capacities.map(capacity => `
+                <tr>
+                    <td>${capacity.id}</td>
+                    <td>${capacity.transporter}</td>
+                    <td>${capacity.vehicleType}</td>
+                    <td>${capacity.capacity}</td>
+                    <td>${capacity.availableFrom}</td>
+                    <td><button onclick="editCapacity(${capacity.id})">Edit</button> <button onclick="deleteCapacity(${capacity.id})">Delete</button></td>
+                </tr>
+            `).join('');
+        }
+
+        // Call populateTables when the page loads
+        window.onload = populateTables;
+
+        // Placeholder functions for CRUD operations
+        function editLoad(id) {
+            console.log(`Editing load with id ${id}`);
+        }
+
+        function deleteLoad(id) {
+            console.log(`Deleting load with id ${id}`);
+        }
+
+        function editCapacity(id) {
+            console.log(`Editing capacity with id ${id}`);
+        }
+
+        function deleteCapacity(id) {
+            console.log(`Deleting capacity with id ${id}`);
+        }
+    </script>
+</body>
+</html>
