@@ -222,6 +222,64 @@
             background-color: #2C7873;
             color: white;
         }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        form input, form select {
+            margin-bottom: 10px;
+            padding: 5px;
+        }
+
+        form button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        form button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -348,6 +406,47 @@
             <h2>Settings</h2>
             <!-- Add settings content here -->
         </div>
+
+        <div id="capacity-section" class="dashboard-section">
+            <h2>Manage Capacity</h2>
+            <button id="openModalBtn">Add New Capacity</button>
+            <table id="capacity-table">
+                <thead>
+                    <tr>
+                        <th>Vehicle Type</th>
+                        <th>Capacity (tons)</th>
+                        <th>Available From</th>
+                        <th>Available To</th>
+                        <th>Route</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="capacity-body">
+                    <!-- Capacity entries will be dynamically added here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Modal for adding capacity -->
+        <div id="add-capacity-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Add New Capacity</h2>
+                <form id="add-capacity-form">
+                    <select id="vehicle-type" required>
+                        <option value="">Select Vehicle Type</option>
+                        <option value="Truck">Truck</option>
+                        <option value="Van">Van</option>
+                        <option value="Trailer">Trailer</option>
+                    </select>
+                    <input type="number" id="capacity" placeholder="Capacity (tons)" required>
+                    <input type="date" id="available-from" required>
+                    <input type="date" id="available-to" required>
+                    <input type="text" id="route" placeholder="Route (e.g., City A to City B)" required>
+                    <button type="submit">Add Capacity</button>
+                </form>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -451,6 +550,745 @@
         // Initialize the dashboard
         fetchShipments();
         showSection('dashboard-section');
+
+        let capacities = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const openModalBtn = document.getElementById('openModalBtn');
+            const modal = document.getElementById('add-capacity-modal');
+            const closeBtn = modal.querySelector('.close');
+            const form = document.getElementById('add-capacity-form');
+
+            openModalBtn.addEventListener('click', function() {
+                modal.style.display = 'block';
+            });
+
+            closeBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+
+            window.addEventListener('click', function(event) {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            });
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                addCapacity();
+            });
+
+            // Initial update of capacity table
+            updateCapacityTable();
+        });
+
+        function addCapacity() {
+            const vehicleType = document.getElementById('vehicle-type').value;
+            const capacity = document.getElementById('capacity').value;
+            const availableFrom = document.getElementById('available-from').value;
+            const availableTo = document.getElementById('available-to').value;
+            const route = document.getElementById('route').value;
+
+            const newCapacity = {
+                id: Date.now(),
+                vehicleType,
+                capacity,
+                availableFrom,
+                availableTo,
+                route
+            };
+
+            capacities.push(newCapacity);
+            updateCapacityTable();
+            closeModal();
+
+            // Reset form
+            document.getElementById('add-capacity-form').reset();
+        }
+
+        function updateCapacityTable() {
+            const tableBody = document.getElementById('capacity-body');
+            tableBody.innerHTML = '';
+
+            capacities.forEach(capacity => {
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td>${capacity.vehicleType}</td>
+                    <td>${capacity.capacity}</td>
+                    <td>${capacity.availableFrom}</td>
+                    <td>${capacity.availableTo}</td>
+                    <td>${capacity.route}</td>
+                    <td>
+                        <button onclick="editCapacity(${capacity.id})">Edit</button>
+                        <button onclick="deleteCapacity(${capacity.id})">Delete</button>
+                    </td>
+                `;
+            });
+        }
+
+        function editCapacity(id) {
+            // Implement edit functionality
+            console.log('Edit capacity', id);
+        }
+
+        function deleteCapacity(id) {
+            capacities = capacities.filter(capacity => capacity.id !== id);
+            updateCapacityTable();
+        }
+
+        function closeModal() {
+            document.getElementById('add-capacity-modal').style.display = 'none';
+        }
+    </script>
+
+    <div id="availableShipments"></div>
+
+    <script>
+        // Remove the socket.io related code since we're not using it with PHP
+        
+        // Update the fetchShipments function to use PHP
+        async function fetchShipments() {
+            try {
+                const response = await fetch('get_available_shipments.php');
+                const shipments = await response.json();
+                displayShipments(shipments);
+            } catch (error) {
+                console.error('Error fetching shipments:', error);
+            }
+        }
+
+        // Function to display shipments in the UI
+        function displayShipments(shipments) {
+            const shipmentsContainer = document.getElementById('availableShipments');
+            shipmentsContainer.innerHTML = shipments.map(shipment => `
+                <div class="shipment">
+                    <h3>${shipment.origin} to ${shipment.destination}</h3>
+                    <p>Cargo Type: ${shipment.cargoType}</p>
+                    <p>Weight: ${shipment.weight} kg</p>
+                    <button onclick="acceptShipment('${shipment._id}')">Accept Shipment</button>
+                </div>
+            `).join('');
+        }
+
+        // Remove the socket.on listener
+
+        // Initial fetch of shipments
+        fetchShipments();
+
+        // Update the acceptShipment function to use PHP
+        async function acceptShipment(shipmentId) {
+            try {
+                const response = await fetch('accept_shipment.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `shipmentId=${shipmentId}`
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('Shipment accepted successfully!');
+                    fetchShipments(); // Refresh the list of available shipments
+                } else {
+                    alert('Failed to accept shipment. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error accepting shipment:', error);
+                alert('An error occurred. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>
+                alert('An error occurred. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>
+        }
+    </script>
+</body>
+</html>
+</html>
+                console.error('Error accepting shipment:', error);
+                alert('An error occurred. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>
+                }
+            } catch (error) {
+                console.error('Error accepting shipment:', error);
+                alert('An error occurred. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>
+        }
+    </script>
+</body>
+</html>
+</body>
+</html>
+</html>
+    </script>
+</body>
+</html>
+</body>
+</html>
+</body>
+</html>
+                const result = await response.json();
+                if (result.success) {
+                    alert('Shipment accepted successfully!');
+                    fetchShipments(); // Refresh the list of available shipments
+                } else {
+                    alert('Failed to accept shipment. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error accepting shipment:', error);
+                alert('An error occurred. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>
+        }
+    </script>
+</body>
+</html>
+</html>
+</html>
+</html>
+                alert('An error occurred. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>
+            }
+        }
+    </script>
+</body>
+</html>
+        }
+    </script>
+</body>
+</html>
+</html>
+        }
+    </script>
+</body>
+</html>
+                    alert('Failed to accept shipment. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error accepting shipment:', error);
+                alert('An error occurred. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>
+            try {
+                const response = await fetch('accept_shipment.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `shipmentId=${shipmentId}`
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('Shipment accepted successfully!');
+                    fetchShipments(); // Refresh the list of available shipments
+                } else {
+                    alert('Failed to accept shipment. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error accepting shipment:', error);
+                alert('An error occurred. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>
+</body>
+</html>
+</html>
+        }
+    </script>
+</body>
+</html>
+    </script>
+</body>
+</html>
+        }
+    </script>
+</body>
+</html>
+                alert('An error occurred. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>
+    </script>
+</body>
+</html>
+                    alert('Shipment accepted successfully!');
+                    fetchShipments(); // Refresh the list of available shipments
+                } else {
+                    alert('Failed to accept shipment. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error accepting shipment:', error);
+                alert('An error occurred. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>
+</body>
+</html>
+                console.error('Error accepting shipment:', error);
+                alert('An error occurred. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>
+</html>
+</html>
+                alert('An error occurred. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>
+        }
+    </script>
+</body>
+</html>
+</html>
+                alert('An error occurred. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>
+</body>
+</html>
+                console.error('Error accepting shipment:', error);
+                alert('An error occurred. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>
+            }
+        }
+    </script>
+</body>
+</html>
+                    fetchShipments(); // Refresh the list of available shipments
+                } else {
+                    alert('Failed to accept shipment. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error accepting shipment:', error);
+                alert('An error occurred. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>
+                alert('An error occurred. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>
+                const response = await fetch('accept_shipment.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `shipmentId=${shipmentId}`
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('Shipment accepted successfully!');
+                    fetchShipments(); // Refresh the list of available shipments
+                } else {
+                    alert('Failed to accept shipment. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error accepting shipment:', error);
+                alert('An error occurred. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>
+                } else {
+                    alert('Failed to accept shipment. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error accepting shipment:', error);
+                alert('An error occurred. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>
+            }
+        }
+    </script>
+</body>
+</html>
+</body>
+</html>
+    <aside class="sidebar">
+        <div class="logo">
+            <i class="fas fa-truck"></i> Nyamula-Logistics
+        </div>
+        <nav class="nav">
+            <a href="#" data-section="dashboard" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="#" data-section="shipments"><i class="fas fa-box"></i> Shipments</a>
+            <a href="#" data-section="routes"><i class="fas fa-route"></i> Routes</a>
+            <a href="#" data-section="vehicles"><i class="fas fa-truck"></i> Vehicles</a>
+            <a href="#" data-section="drivers"><i class="fas fa-users"></i> Drivers</a>
+            <a href="#" data-section="analytics"><i class="fas fa-chart-line"></i> Analytics</a>
+            <a href="#" data-section="settings"><i class="fas fa-cogs"></i> Settings</a>
+        </nav>
+        <div class="profile">
+            <img src="https://via.placeholder.com/40" alt="Profile Picture">
+            <p>Stephen Muraga</p>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div id="dashboard-section">
+            <div class="breadcrumb">
+                <a href="#">Dashboard</a> / Overview
+            </div>
+            <div class="dashboard-header">
+                <h2>Logistics Dashboard</h2>
+                <button onclick="generateReport()">Generate Report</button>
+            </div>
+
+            <!-- Stats Container -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <h3>Active Shipments</h3>
+                    <p id="activeShipments">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Completed Deliveries</h3>
+                    <p id="completedDeliveries">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Revenue</h3>
+                    <p id="totalRevenue">K0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>On-Time Delivery Rate</h3>
+                    <p id="onTimeRate">0%</p>
+                </div>
+            </div>
+
+            <!-- Search and Filter -->
+            <div class="filters">
+                <input type="search" class="search-bar" placeholder="Search for shipment" oninput="filterShipments()">
+                <select class="status-filter" onchange="filterShipments()">
+                    <option value="all">All Statuses</option>
+                    <option value="in-transit">In Transit</option>
+                    <option value="delivered">Delivered</option>
+                    <option value="pending">Pending</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+                <select class="route-filter" onchange="filterShipments()">
+                    <option value="all">All Routes</option>
+                    <option value="lusaka-ndola">Lusaka - Ndola</option>
+                    <option value="kitwe-livingstone">Kitwe - Livingstone</option>
+                    <option value="chipata-solwezi">Chipata - Solwezi</option>
+                </select>
+            </div>
+
+            <!-- Shipments Table -->
+            <table class="orders-table">
+                <thead>
+                    <tr>
+                        <th>Shipment ID</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Route</th>
+                        <th>Customer</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody id="shipmentsTableBody">
+                    <!-- Table rows will be dynamically populated here -->
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <a href="#" onclick="changePage(-1)">&laquo; Previous</a>
+                <a href="#" onclick="changePage(1)">Next &raquo;</a>
+            </div>
+        </div>
+
+        <div id="shipments-section" style="display: none;">
+            <h2>Shipments</h2>
+            <!-- Add shipments content here -->
+        </div>
+
+        <div id="routes-section" style="display: none;">
+            <h2>Routes</h2>
+            <!-- Add routes content here -->
+        </div>
+
+        <div id="vehicles-section" style="display: none;">
+            <h2>Vehicles</h2>
+            <!-- Add vehicles content here -->
+        </div>
+
+        <div id="drivers-section" style="display: none;">
+            <h2>Drivers</h2>
+            <!-- Add drivers content here -->
+        </div>
+
+        <div id="analytics-section" style="display: none;">
+            <h2>Analytics</h2>
+            <!-- Add analytics content here -->
+        </div>
+
+        <div id="settings-section" style="display: none;">
+            <h2>Settings</h2>
+            <!-- Add settings content here -->
+        </div>
+
+        <div id="capacity-section" class="dashboard-section">
+            <h2>Manage Capacity</h2>
+            <button onclick="openModal()">Add New Capacity</button>
+            <table id="capacity-table">
+                <thead>
+                    <tr>
+                        <th>Vehicle Type</th>
+                        <th>Capacity (tons)</th>
+                        <th>Available From</th>
+                        <th>Available To</th>
+                        <th>Route</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="capacity-body">
+                    <!-- Capacity entries will be dynamically added here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Modal for adding capacity -->
+        <div id="add-capacity-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2>Add New Capacity</h2>
+                <form id="add-capacity-form">
+                    <select id="vehicle-type" required>
+                        <option value="">Select Vehicle Type</option>
+                        <option value="Truck">Truck</option>
+                        <option value="Van">Van</option>
+                        <option value="Trailer">Trailer</option>
+                    </select>
+                    <input type="number" id="capacity" placeholder="Capacity (tons)" required>
+                    <input type="date" id="available-from" required>
+                    <input type="date" id="available-to" required>
+                    <input type="text" id="route" placeholder="Route (e.g., City A to City B)" required>
+                    <button type="submit">Add Capacity</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Replace the existing shipments array with a function to fetch data from the server
+        let shipments = []
+
+        // Function to fetch shipments from the server
+        async function fetchShipments() {
+            try {
+                const response = await fetch('get_shipments.php');
+                shipments = await response.json();
+                populateShipmentsTable(shipments);
+                updateDashboardStats();
+            } catch (error) {
+                console.error('Error fetching shipments:', error);
+            }
+        }
+
+        // Function to populate the shipments table
+        function populateShipmentsTable(shipments) {
+            const tableBody = document.getElementById('shipmentsTableBody');
+            tableBody.innerHTML = '';
+            shipments.forEach(shipment => {
+                const row = `
+                    <tr>
+                        <td>${shipment.id}</td>
+                        <td>${shipment.date}</td>
+                        <td><span class="status ${shipment.status}">${shipment.status.charAt(0).toUpperCase() + shipment.status.slice(1)}</span></td>
+                        <td>${shipment.route}</td>
+                        <td>${shipment.customer}</td>
+                        <td>${shipment.value}</td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        // Update the filterShipments function to fetch filtered data from the server
+        async function filterShipments() {
+            const searchTerm = document.querySelector('.search-bar').value.toLowerCase();
+            const statusFilter = document.querySelector('.status-filter').value;
+            const routeFilter = document.querySelector('.route-filter').value;
+
+            try {
+                const response = await fetch(`filter_shipments.php?search=${searchTerm}&status=${statusFilter}&route=${routeFilter}`);
+                const filteredShipments = await response.json();
+                populateShipmentsTable(filteredShipments);
+            } catch (error) {
+                console.error('Error filtering shipments:', error);
+            }
+        }
+
+        // Function to change page (for pagination)
+        function changePage(direction) {
+            // Implement pagination logic here
+            console.log(`Changing page: ${direction}`);
+        }
+
+        // Function to generate report
+        function generateReport() {
+            // Implement report generation logic here
+            alert('Generating logistics report...');
+        }
+
+        // Update the updateDashboardStats function to use the fetched shipments data
+        function updateDashboardStats() {
+            document.getElementById('activeShipments').textContent = shipments.filter(s => s.status === 'in-transit').length;
+            document.getElementById('completedDeliveries').textContent = shipments.filter(s => s.status === 'delivered').length;
+            const totalRevenue = shipments.reduce((sum, s) => sum + parseInt(s.value.replace('K', '').replace(',', '')), 0);
+            document.getElementById('totalRevenue').textContent = `K${totalRevenue.toLocaleString()}`;
+            const onTimeRate = (shipments.filter(s => s.status === 'delivered').length / shipments.length * 100).toFixed(1);
+            document.getElementById('onTimeRate').textContent = `${onTimeRate}%`;
+        }
+
+        // Function to show the selected section and hide others
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.main-content > div');
+            sections.forEach(section => {
+                section.style.display = section.id === sectionId ? 'block' : 'none';
+            });
+
+            // Update active state in the sidebar
+            const navLinks = document.querySelectorAll('.nav a');
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('data-section') === sectionId.replace('-section', '')) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        // Add click event listeners to sidebar links
+        document.querySelectorAll('.nav a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const sectionId = e.target.getAttribute('data-section') + '-section';
+                showSection(sectionId);
+            });
+        });
+
+        // Initialize the dashboard
+        fetchShipments();
+        showSection('dashboard-section');
+
+        let capacities = [];
+
+        function openModal() {
+            document.getElementById('add-capacity-modal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('add-capacity-modal').style.display = 'none';
+        }
+
+        document.getElementById('add-capacity-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            addCapacity();
+        });
+
+        function addCapacity() {
+            const vehicleType = document.getElementById('vehicle-type').value;
+            const capacity = document.getElementById('capacity').value;
+            const availableFrom = document.getElementById('available-from').value;
+            const availableTo = document.getElementById('available-to').value;
+            const route = document.getElementById('route').value;
+
+            const newCapacity = {
+                id: Date.now(), // Using timestamp as a simple unique id
+                vehicleType,
+                capacity,
+                availableFrom,
+                availableTo,
+                route
+            };
+
+            capacities.push(newCapacity);
+            updateCapacityTable();
+            closeModal();
+
+            // Reset form
+            document.getElementById('add-capacity-form').reset();
+        }
+
+        function updateCapacityTable() {
+            const tableBody = document.getElementById('capacity-body');
+            tableBody.innerHTML = '';
+
+            capacities.forEach(capacity => {
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td>${capacity.vehicleType}</td>
+                    <td>${capacity.capacity}</td>
+                    <td>${capacity.availableFrom}</td>
+                    <td>${capacity.availableTo}</td>
+                    <td>${capacity.route}</td>
+                    <td>
+                        <button onclick="editCapacity(${capacity.id})">Edit</button>
+                        <button onclick="deleteCapacity(${capacity.id})">Delete</button>
+                    </td>
+                `;
+            });
+        }
+
+        function editCapacity(id) {
+            // Implement edit functionality
+            console.log('Edit capacity', id);
+        }
+
+        function deleteCapacity(id) {
+            capacities = capacities.filter(capacity => capacity.id !== id);
+            updateCapacityTable();
+        }
+
+        // Initial update of capacity table
+        updateCapacityTable();
     </script>
 
     <div id="availableShipments"></div>
