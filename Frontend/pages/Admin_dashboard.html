@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nyamula Logistics Admin Dashboard</title>
+    <style>
+        /* Global styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            width: 250px;
+            background-color: #218838;
+            padding-top: 20px;
+            color: #fff;
+            position: fixed;
+            height: 100%;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .sidebar ul li {
+            padding: 15px 20px;
+            cursor: pointer;
+        }
+
+        .sidebar ul li:hover {
+            background-color: #218838;
+        }
+
+        .sidebar ul li.active {
+            background-color: #218838;
+        }
+
+        /* Main content styles */
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            width: calc(100% - 250px);
+            background-color: #fff;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            background-color: #fff;
+            padding: 10px 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .header h1 {
+            color: #213383;
+        }
+
+        .header button {
+            background-color: #218838;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .dashboard-cards {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .card {
+            background-color: #fff;
+            padding: 20px;
+            width: 48%;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .card h3 {
+            color: #218838;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 20px;
+            color: #555;
+        }
+
+        /* User management table */
+        .user-table {
+            margin-top: 30px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .user-table th, .user-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .user-table th {
+            background-color: #218838;
+            color: white;
+        }
+
+        /* Responsiveness */
+        @media screen and (max-width: 768px) {
+            .dashboard-cards {
+                flex-direction: column;
+            }
+
+            .card {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+        }
+
+        /* Additional styles for new sections */
+        .section {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .section h2 {
+            color: #218838;
+            margin-bottom: 15px;
+        }
+
+        .action-buttons {
+            margin-top: 10px;
+        }
+
+        .action-buttons button {
+            background-color: #218838;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            margin-right: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .action-buttons button:hover {
+            background-color: #1e7e34;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 8px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Nyamula Logistics</h2>
+        <ul>
+            <li class="active" onclick="showSection('dashboard')">Dashboard</li>
+            <li onclick="showSection('transporters')">Manage Transporters</li>
+            <li onclick="showSection('cargoOwners')">Manage Cargo Owners</li>
+            <li onclick="showSection('loads')">Manage Loads</li>
+            <li onclick="showSection('capacity')">Manage Capacity</li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1>Admin Dashboard</h1>
+            <button onclick="logout()">Logout</button>
+        </div>
+
+        <div id="dashboard" class="section">
+            <!-- Dashboard Overview -->
+            <div class="dashboard-cards">
+                <div class="card">
+                    <h3>Total Transporters</h3>
+                    <p id="transporterCount"></p>
+                </div>
+                <div class="card">
+                    <h3>Total Cargo Owners</h3>
+                    <p id="cargoOwnerCount"></p>
+                </div>
+                <div class="card">
+                    <h3>Active Loads</h3>
+                    <p id="activeLoadsCount"></p>
+                </div>
+                <div class="card">
+                    <h3>Available Capacity</h3>
+                    <p id="availableCapacityCount"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manage Transporters -->
+        <div id="transporters" class="section" style="display: none;">
+            <h2>Manage Transporters</h2>
+            <table class="user-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="transporterTableBody">
+                    <!-- Transporter entries will be dynamically added here -->
+                </tbody>
+            </table>
+            <div class="action-buttons">
+                <button onclick="openModal('addTransporterModal')">Add Transporter</button>
+            </div>
+        </div>
+
+        <!-- Manage Cargo Owners -->
+        <div id="cargoOwners" class="section" style="display: none;">
+            <h2>Manage Cargo Owners</h2>
+            <table class="user-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="cargoOwnerTableBody">
+                    <!-- Cargo owner entries will be dynamically added here -->
+                </tbody>
+            </table>
+            <div class="action-buttons">
+                <button onclick="openModal('addCargoOwnerModal')">Add Cargo Owner</button>
+            </div>
+        </div>
+
+        <!-- Manage Loads -->
+        <div id="loads" class="section" style="display: none;">
+            <h2>Manage Loads</h2>
+            <table class="user-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Cargo Owner</th>
+                        <th>Transporter</th>
+                        <th>Origin</th>
+                        <th>Destination</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="loadTableBody">
+                    <!-- Load entries will be dynamically added here -->
+                </tbody>
+            </table>
+            <div class="action-buttons">
+                <button onclick="openModal('addLoadModal')">Add Load</button>
+            </div>
+        </div>
+
+        <!-- Manage Capacity -->
+        <div id="capacity" class="section" style="display: none;">
+            <h2>Manage Capacity</h2>
+            <!-- Capacity management will go here -->
+        </div>
+
+        <!-- Add Transporter Modal -->
+        <div id="addTransporterModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('addTransporterModal')">&times;</span>
+                <h2>Add Transporter</h2>
+                <label for="transporterName">Name:</label>
+                <input type="text" id="transporterName" required>
+                <label for="transporterEmail">Email:</label>
+                <input type="email" id="transporterEmail" required>
+                <button onclick="addTransporter()">Add Transporter</button>
+            </div>
+        </div>
+
+        <!-- Add Cargo Owner Modal -->
+        <div id="addCargoOwnerModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('addCargoOwnerModal')">&times;</span>
+                <h2>Add Cargo Owner</h2>
+                <label for="cargoOwnerName">Name:</label>
+                <input type="text" id="cargoOwnerName" required>
+                <label for="cargoOwnerEmail">Email:</label>
+                <input type="email" id="cargoOwnerEmail" required>
+                <button onclick="addCargoOwner()">Add Cargo Owner</button>
+            </div>
+        </div>
+
+        <!-- Add Load Modal -->
+        <div id="addLoadModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('addLoadModal')">&times;</span>
+                <h2>Add Load</h2>
+                <label for="loadCargoOwner">Cargo Owner:</label>
+                <select id="loadCargoOwner" required>
+                    <option value="">Select Cargo Owner</option>
+                </select>
+                <label for="loadTransporter">Transporter:</label>
+                <select id="loadTransporter" required>
+                    <option value="">Select Transporter</option>
+                </select>
+                <label for="loadOrigin">Origin:</label>
+                <input type="text" id="loadOrigin" required>
+                <label for="loadDestination">Destination:</label>
+                <input type="text" id="loadDestination" required>
+                <button onclick="addLoad()">Add Load</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Sample data
+    let transporters = [];
+    let cargoOwners = [];
+    let loads = [];
+
+    // Function to show a specific section
+    function showSection(sectionId) {
+        document.querySelectorAll('.section').forEach(section => {
+            section.style.display = 'none';
+        });
+        document.getElementById(sectionId).style.display = 'block';
+        updateCounts();
+        renderTransporters();
+        renderCargoOwners();
+        renderLoads();
+        populateCargoOwnerOptions();
+        populateTransporterOptions();
+    }
+
+    // Function to update dashboard counts
+    function updateCounts() {
+        document.getElementById('transporterCount').innerText = transporters.length;
+        document.getElementById('cargoOwnerCount').innerText = cargoOwners.length;
+        document.getElementById('activeLoadsCount').innerText = loads.length; // Update with actual data
+        document.getElementById('availableCapacityCount').innerText = 0; // Replace with actual data
+    }
+
+    // Function to render transporters
+    function renderTransporters() {
+        const transporterTableBody = document.getElementById('transporterTableBody');
+        transporterTableBody.innerHTML = '';
+        transporters.forEach((transporter, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${transporter.name}</td>
+                <td>${transporter.email}</td>
+                <td>
+                    <button onclick="openEditTransporterModal(${index})">Edit</button>
+                    <button onclick="deleteTransporter(${index})">Delete</button>
+                </td>
+            `;
+            transporterTableBody.appendChild(row);
+        });
+    }
+
+    // Function to render cargo owners
+    function renderCargoOwners() {
+        const cargoOwnerTableBody = document.getElementById('cargoOwnerTableBody');
+        cargoOwnerTableBody.innerHTML = '';
+        cargoOwners.forEach((owner, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${owner.name}</td>
+                <td>${owner.email}</td>
+                <td>
+                    <button onclick="openEditCargoOwnerModal(${index})">Edit</button>
+                    <button onclick="deleteCargoOwner(${index})">Delete</button>
+                </td>
+            `;
+            cargoOwnerTableBody.appendChild(row);
+        });
+    }
+
+    // Function to render loads
+    function renderLoads() {
+        const loadTableBody = document.getElementById('loadTableBody');
+        loadTableBody.innerHTML = '';
+        loads.forEach((load, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${load.cargoOwner}</td>
+                <td>${load.transporter}</td>
+                <td>${load.origin}</td>
+                <td>${load.destination}</td>
+                <td>${load.status}</td>
+                <td>
+                    <button onclick="deleteLoad(${index})">Delete</button>
+                </td>
+            `;
+            loadTableBody.appendChild(row);
+        });
+    }
+
+    // Function to populate cargo owner options in the load modal
+    function populateCargoOwnerOptions() {
+        const cargoOwnerSelect = document.getElementById('loadCargoOwner');
+        cargoOwnerSelect.innerHTML = '<option value="">Select Cargo Owner</option>';
+        cargoOwners.forEach((owner, index) => {
+            const option = document.createElement('option');
+            option.value = owner.name; // You might want to set this to a unique ID
+            option.textContent = owner.name;
+            cargoOwnerSelect.appendChild(option);
+        });
+    }
+
+    // Function to populate transporter options in the load modal
+    function populateTransporterOptions() {
+        const transporterSelect = document.getElementById('loadTransporter');
+        transporterSelect.innerHTML = '<option value="">Select Transporter</option>';
+        transporters.forEach((transporter, index) => {
+            const option = document.createElement('option');
+            option.value = transporter.name; // You might want to set this to a unique ID
+            option.textContent = transporter.name;
+            transporterSelect.appendChild(option);
+        });
+    }
+
+    // Function to add a transporter
+    function addTransporter() {
+        const name = document.getElementById('transporterName').value;
+        const email = document.getElementById('transporterEmail').value;
+        if (name && email) {
+            transporters.push({ name, email });
+            closeModal('addTransporterModal');
+            renderTransporters();
+            updateCounts();
+        }
+    }
+
+    // Function to delete a transporter
+    function deleteTransporter(index) {
+        transporters.splice(index, 1);
+        renderTransporters();
+        updateCounts();
+    }
+
+    // Function to open edit modal for transporter
+    function openEditTransporterModal(index) {
+        const transporter = transporters[index];
+        document.getElementById('transporterName').value = transporter.name;
+        document.getElementById('transporterEmail').value = transporter.email;
+        openModal('addTransporterModal');
+        // Add a hidden field to hold the index for updating
+        const transporterIndexField = document.createElement('input');
+        transporterIndexField.type = 'hidden';
+        transporterIndexField.id = 'transporterIndex';
+        transporterIndexField.value = index;
+        document.querySelector('.modal-content').appendChild(transporterIndexField);
+    }
+
+    // Function to add a cargo owner
+    function addCargoOwner() {
+        const name = document.getElementById('cargoOwnerName').value;
+        const email = document.getElementById('cargoOwnerEmail').value;
+        if (name && email) {
+            cargoOwners.push({ name, email });
+            closeModal('addCargoOwnerModal');
+            renderCargoOwners();
+            updateCounts();
+        }
+    }
+
+    // Function to delete a cargo owner
+    function deleteCargoOwner(index) {
+        cargoOwners.splice(index, 1);
+        renderCargoOwners();
+        updateCounts();
+    }
+
+    // Function to open edit modal for cargo owner
+    function openEditCargoOwnerModal(index) {
+        const owner = cargoOwners[index];
+        document.getElementById('cargoOwnerName').value = owner.name;
+        document.getElementById('cargoOwnerEmail').value = owner.email;
+        openModal('addCargoOwnerModal');
+        // Add a hidden field to hold the index for updating
+        const cargoOwnerIndexField = document.createElement('input');
+        cargoOwnerIndexField.type = 'hidden';
+        cargoOwnerIndexField.id = 'cargoOwnerIndex';
+        cargoOwnerIndexField.value = index;
+        document.querySelector('.modal-content').appendChild(cargoOwnerIndexField);
+    }
+
+    // Function to add a load
+    function addLoad() {
+        const cargoOwner = document.getElementById('loadCargoOwner').value;
+        const transporter = document.getElementById('loadTransporter').value;
+        const origin = document.getElementById('loadOrigin').value;
+        const destination = document.getElementById('loadDestination').value;
+
+        if (cargoOwner && transporter && origin && destination) {
+            loads.push({
+                cargoOwner,
+                transporter,
+                origin,
+                destination,
+                status: 'Active' // You can change the status as needed
+            });
+            closeModal('addLoadModal');
+            renderLoads();
+            updateCounts();
+        }
+    }
+
+    // Function to delete a load
+    function deleteLoad(index) {
+        loads.splice(index, 1);
+        renderLoads();
+        updateCounts();
+    }
+
+    // Modal functions
+    function openModal(modalId) {
+        document.getElementById(modalId).style.display = 'block';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    // Logout function
+    function logout() {
+        // Implement logout functionality here
+        alert('Logged out');
+    }
+
+    // Initial setup
+    showSection('dashboard'); // Show the dashboard initially
+</script>
+
+</body>
+</html>
