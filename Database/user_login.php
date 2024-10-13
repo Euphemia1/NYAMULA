@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['role'] = 'cargo_owner';
                 $_SESSION['email'] = $email;
                 // Redirect to cargo owner dashboard
-                header("Location: cargo_dashboard.html");
+                header("Location: ../pages/cargo_dashboard.html");
                 exit();
             } else {
                 echo "Invalid password.";

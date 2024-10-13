@@ -78,7 +78,7 @@
 
   <div class="container">
     <h1>Cargo Owner Sign-Up</h1>
-    <form action="/cargo-owner-register" method="POST">
+    <form action="../Database/cargo_signup.php" method="POST">
       <div>
         <label for="name" style="display: block; font-size: 14px; color: #333; margin-bottom: 5px;">Full Name</label>
         <input type="text" id="name" name="name" required>
@@ -93,18 +93,18 @@
       </div>
       <div>
         <label for="company" style="display: block; font-size: 14px; color: #333; margin-bottom: 5px;">Company Name</label>
-        <input type="text" id="company" name="company" required>
+        <input type="text" id="company" name="companyname" required>
       </div>
       <div>
         <label for="phone" style="display: block; font-size: 14px; color: #333; margin-bottom: 5px;">Phone Number</label>
-        <input type="tel" id="phone" name="phone" required>
+        <input type="tel" id="phone" name="phonenumber" required>
       </div>
       <div>
         <button type="submit">Sign Up as Cargo Owner</button>
       </div>
     </form>
   </div>
-  <script>
+  <!-- <script>
     document.querySelector('form').addEventListener('submit', function(e) {
       e.preventDefault();
       // Here you would typically send the form data to the server
@@ -115,7 +115,7 @@
         window.location.href = 'user_login.html';
       }, 1000);
     });
-  </script>
+  </script> -->
 </body>
 </html>
 

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cargo Owner Sign-Up - Nyamula Logistics</title>
@@ -77,7 +78,7 @@
 
   <div class="container">
     <h1>Login</h1>
-    <form id="loginForm" action="/login" method="POST">
+    <form id="loginForm" action="../Database/user_login.php" method="POST">
       <div>
         <label for="email" style="display: block; font-size: 14px; color: #333; margin-bottom: 5px;">Email</label>
         <input type="email" id="email" name="email" required>
@@ -89,9 +90,9 @@
       <div>
         <label style="display: block; font-size: 14px; color: #333; margin-bottom: 5px;">Select login option</label>
         <div>
-          <input type="radio" id="cargo_owner" name="login_option" value="cargo_owner" required>
+          <input type="radio" id="cargo_owner" name="role" value="cargo_owner" required>
           <label for="cargo_owner" style="font-size: 14px; color: #333; margin-right: 10px;">Cargo Owner</label>
-          <input type="radio" id="transporter" name="login_option" value="transporter" required>
+          <input type="radio" id="transporter" name="role" value="transporter" required>
           <label for="transporter" style="font-size: 14px; color: #333;">Transporter</label>
         </div>
       </div>
@@ -102,7 +103,7 @@
     
   </div>
 
-  <script>
+  <!-- <script>
     document.getElementById('loginForm').addEventListener('submit', function(e) {
       e.preventDefault();
       
@@ -129,7 +130,7 @@
       // This is a placeholder function. Replace with actual authentication logic.
       return true; // Always return true for this example
     }
-  </script>
+  </script> -->
 
 </body>
 </html>
